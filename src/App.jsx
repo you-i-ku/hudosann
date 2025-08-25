@@ -587,7 +587,7 @@ export default function App() {
         </div>
         
         {/* 画像セクション - 完全に独立したレイアウト */}
-        <div style={{ width: '100%', height: '320px', marginBottom: '16px' }}>
+        <div style={{ width: '100%', height: '700px', marginBottom: '16px' }}>
           <div style={{ 
             height: '100%',
             display: 'grid',
@@ -595,10 +595,8 @@ export default function App() {
             padding: '8px',
             backgroundColor: '#f9fafb',
             borderRadius: '8px',
-            gridTemplateColumns: reportImages.length === 1 ? '1fr' : 
-                                reportImages.length === 2 ? '1fr 1fr' : 
-                                '1fr 1fr',
-            gridTemplateRows: reportImages.length <= 2 ? '1fr' : '1fr 1fr'
+            gridTemplateColumns: (reportImages.length === 1 || reportImages.length === 2) ? '1fr' : '1fr 1fr',
+            gridTemplateRows: reportImages.length === 1 ? '1fr' : '1fr 1fr'
           }}>
             {reportImages.map((img, index) => (
               <div 
