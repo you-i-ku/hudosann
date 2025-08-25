@@ -616,9 +616,10 @@ export default function App() {
                   src={img}
                   alt={`物件画像 ${index + 1}`}
                   style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain',
+                    maxWidth: '100%',
+                    maxHeight: '100%',
+                    width: 'auto',
+                    height: 'auto',
                     display: 'block'
                   }}
                 />
