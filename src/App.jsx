@@ -99,6 +99,7 @@ export default function App() {
   const [images, setImages] = useState([]);
   const [reportImages, setReportImages] = useState([]); // レポート用画像を独立管理
   const [imageCount, setImageCount] = useState(0);
+  const [memo, setMemo] = useState('');
   const [address, setAddress] = useState('');
   const [nearestStation, setNearestStation] = useState('');
   const [interior, setInterior] = useState('');
@@ -284,6 +285,19 @@ export default function App() {
         <p className="text-center text-gray-600 mb-8">
           物件情報を入力して、ランクを評価し、画像を生成しましょう。
         </p>
+
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            メモ欄（レポートには反映されません）
+          </label>
+          <textarea
+            value={memo}
+            onChange={(e) => setMemo(e.target.value)}
+            rows="3"
+            className="w-full p-2 border border-gray-300 rounded-xl"
+            placeholder="住所やURLなど、一時的な情報の貼り付けにご利用ください。"
+          />
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer hover:border-blue-500 transition-colors">
