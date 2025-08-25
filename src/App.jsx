@@ -48,9 +48,9 @@ const rankingCriteria = {
   floor: (val) => {
     const floor = parseInt(val, 10);
     if (isNaN(floor)) return 0;
-    if (floor >= 3) return 5;
-    if (floor === 2) return 3;
-    return 2;
+    if (floor === 1) return 5; // 1階 = SS
+    if (floor === 2) return 4; // 2階 = S
+    return 3; // それ以外 = A
   },
   income: (val) => {
     const income = parseInt(val, 10);
@@ -197,6 +197,17 @@ export default function App() {
     setImageCount(newImages.length);
   };
 
+  const handleResetImages = () => {
+    setImages([]);
+    setReportImages([]);
+    setImageCount(0);
+    // Reset the file input value
+    const input = document.getElementById('image-upload');
+    if (input) {
+      input.value = '';
+    }
+  };
+
   const handleSaveImage = async () => {
     setIsProcessing(true);
     
@@ -288,7 +299,17 @@ export default function App() {
               <Camera size={48} className="mb-2" />
               <span className="text-sm font-semibold">画像をアップロード (最大4枚)</span>
             </label>
-            <p className="text-xs text-gray-400 mt-2">{imageCount} / 4 枚</p>
+            <div className="flex items-center mt-2">
+              <p className="text-xs text-gray-400">{imageCount} / 4 枚</p>
+              {imageCount > 0 && (
+                <button
+                  onClick={handleResetImages}
+                  className="ml-4 px-2 py-1 text-xs bg-red-500 text-white rounded-md hover:bg-red-600"
+                >
+                  リセット
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="col-span-1 md:col-span-2 space-y-4">
@@ -597,7 +618,7 @@ export default function App() {
                   style={{
                     width: '100%',
                     height: '100%',
-                    objectFit: 'cover',
+                    objectFit: 'contain',
                     display: 'block'
                   }}
                 />
