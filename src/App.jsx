@@ -76,6 +76,14 @@ const rankingCriteria = {
     if (count >= 15000) return 3;
     return 2;
   },
+  roomArea: (val) => {
+    const area = parseFloat(val);
+    if (isNaN(area)) return 0;
+    if (area >= 45.1) return 5;
+    if (area >= 35.1) return 4;
+    if (area >= 25.1) return 3;
+    return 2;
+  },
 };
 
 // Map points to ranks
@@ -113,6 +121,8 @@ export default function App() {
   const [stationIncome, setStationIncome] = useState(null);
   const [household1km, setHousehold1km] = useState('');
   const [household1_5km, setHousehold1_5km] = useState('');
+  const [roomAreaM2, setRoomAreaM2] = useState('');
+  const [roomAreaTsubo, setRoomAreaTsubo] = useState('');
   const [overallRank, setOverallRank] = useState('N/A');
   const [isProcessing, setIsProcessing] = useState(false);
   const captureRef = useRef(null);
@@ -121,7 +131,7 @@ export default function App() {
   const [itemRanks, setItemRanks] = useState({
     walkToStation: '-', rent: '-', initialCost: '-', floor: '-',
     interior: '-', location: '-', visibility: '-', signage: '-', stationIncome: '-',
-    household1km: '-', household1_5km: '-',
+    household1km: '-', household1_5km: '-', roomArea: '-',
   });
 
   // Function to calculate and update ranks
@@ -138,6 +148,7 @@ export default function App() {
       stationIncome: stationIncome ? rankingCriteria.income(stationIncome) : 0,
       household1km: rankingCriteria.household1km(household1km),
       household1_5km: rankingCriteria.household1_5km(household1_5km),
+      roomArea: rankingCriteria.roomArea(roomAreaM2),
     };
 
     const validPoints = Object.values(points).filter(p => p > 0);
@@ -157,6 +168,7 @@ export default function App() {
       stationIncome: stationIncome ? pointToRank[points.stationIncome] : '-',
       household1km: pointToRank[points.household1km],
       household1_5km: pointToRank[points.household1_5km],
+      roomArea: pointToRank[points.roomArea],
     });
 
     setOverallRank(getRankFromPoints(averagePoints));
@@ -165,7 +177,31 @@ export default function App() {
   // Recalculate ranks whenever any input field changes
   useEffect(() => {
     calculateRanks();
-  }, [interior, signage, walkToStation, rent, initialCost, floor, location, visibility, stationIncome, household1km, household1_5km]);
+  }, [interior, signage, walkToStation, rent, initialCost, floor, location, visibility, stationIncome, household1km, household1_5km, roomAreaM2]);
+
+  const handleRoomAreaM2Change = (e) => {
+    const m2 = e.target.value;
+    setRoomAreaM2(m2);
+
+    if (m2 === '' || isNaN(parseFloat(m2))) {
+      setRoomAreaTsubo('');
+    } else {
+      const tsubo = (parseFloat(m2) * 0.3025).toFixed(2);
+      setRoomAreaTsubo(tsubo);
+    }
+  };
+
+  const handleRoomAreaTsuboChange = (e) => {
+    const tsubo = e.target.value;
+    setRoomAreaTsubo(tsubo);
+
+    if (tsubo === '' || isNaN(parseFloat(tsubo))) {
+      setRoomAreaM2('');
+    } else {
+      const m2 = (parseFloat(tsubo) / 0.3025).toFixed(2);
+      setRoomAreaM2(m2);
+    }
+  };
 
   // Handle station income lookup
   useEffect(() => {
@@ -401,6 +437,33 @@ export default function App() {
                   {pointToRank[rankingCriteria.initialCost(initialCost)]}
                 </span>
               )}
+            </div>
+            <div className="flex items-center space-x-2">
+              <Home size={20} className="text-gray-500" />
+              <label className="flex-shrink-0 w-24 text-gray-700">部屋面積(㎡):</label>
+              <input
+                type="number"
+                className="flex-grow p-2 border border-gray-300 rounded-xl"
+                value={roomAreaM2}
+                onChange={handleRoomAreaM2Change}
+                placeholder="例: 40"
+              />
+              {roomAreaM2 && (
+                <span className={`px-2 py-1 text-white text-xs rounded-full font-bold ${rankColors[itemRanks.roomArea]}`}>
+                  {itemRanks.roomArea}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center space-x-2">
+              <Home size={20} className="text-gray-500" />
+              <label className="flex-shrink-0 w-24 text-gray-700">坪数:</label>
+              <input
+                type="number"
+                className="flex-grow p-2 border border-gray-300 rounded-xl"
+                value={roomAreaTsubo}
+                onChange={handleRoomAreaTsuboChange}
+                placeholder="例: 12.1"
+              />
             </div>
             <div className="flex items-center space-x-2">
               <Home size={20} className="text-gray-500" />
@@ -713,6 +776,34 @@ export default function App() {
             </div>
           </div>
           
+          {/* 部屋面積 */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '8px',
+            backgroundColor: '#f3f4f6',
+            borderRadius: '8px'
+          }}>
+            <span style={{ color: '#374151' }}>部屋面積:</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ color: '#111827', fontWeight: '500' }}>{roomAreaM2 ? `${roomAreaM2}㎡` : '-'}</span>
+              <span style={{
+                padding: '4px 8px',
+                color: 'white',
+                fontWeight: 'bold',
+                borderRadius: '9999px',
+                fontSize: '11px',
+                backgroundColor: itemRanks.roomArea === 'SS' ? '#10b981' :
+                                itemRanks.roomArea === 'S' ? '#3b82f6' :
+                                itemRanks.roomArea === 'A' ? '#eab308' :
+                                itemRanks.roomArea === 'B' ? '#ef4444' : '#9ca3af'
+              }}>
+                {itemRanks.roomArea}
+              </span>
+            </div>
+          </div>
+
           {/* 内装状態 */}
           <div style={{ 
             display: 'flex', 
