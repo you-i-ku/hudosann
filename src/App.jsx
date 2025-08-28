@@ -79,10 +79,11 @@ const rankingCriteria = {
   roomArea: (val) => {
     const area = parseFloat(val);
     if (isNaN(area)) return 0;
-    if (area >= 45.1) return 5;
-    if (area >= 35.1) return 4;
-    if (area >= 25.1) return 3;
-    return 2;
+    if (area >= 50) return 5;
+    if (area >= 36 && area <= 49) return 4;
+    if (area >= 21 && area <= 35) return 3;
+    if (area <= 20) return 2;
+    return 0; // No rank for values in gaps (e.g., 20.5, 35.5)
   },
 };
 
